@@ -1,0 +1,72 @@
+accounts = {}
+
+while True:
+    print("\n===== SECURE BANK =====")
+    print("1. Create Account")
+    print("2. Deposit")
+    print("3. Withdraw")
+    print("4. Balance Inquiry")
+    print("5. Close Account")
+    print("6. Exit")
+
+    choice = input("Enter choice: ")
+
+    if choice == "1":
+        account_id = int(input("Enter Account ID: "))
+        name = input("Enter Customer Name: ")
+        balance = float(input("Enter Initial Balance: "))
+
+        accounts[account_id] = {
+            "name": name,
+            "balance": balance
+        }
+
+        print("Account created successfully.")
+
+    elif choice == "2":
+        account_id = int(input("Enter Account ID: "))
+
+        if account_id not in accounts:
+            print("Account not found.")
+        else:
+            amount = float(input("Enter Deposit Amount: "))
+            accounts[account_id]["balance"] += amount
+            print("Deposit successful.")
+
+    elif choice == "3":
+        account_id = int(input("Enter Account ID: "))
+
+        if account_id not in accounts:
+            print("Account not found.")
+        else:
+            amount = float(input("Enter Withdrawal Amount: "))
+
+            if amount > accounts[account_id]["balance"]:
+                print("Insufficient funds.")
+            else:
+                accounts[account_id]["balance"] -= amount
+                print("Withdrawal successful.")
+
+    elif choice == "4":
+        account_id = int(input("Enter Account ID: "))
+
+        if account_id not in accounts:
+            print("Account not found.")
+        else:
+            print("Customer:", accounts[account_id]["name"])
+            print("Balance:", accounts[account_id]["balance"])
+
+    elif choice == "5":
+        account_id = int(input("Enter Account ID: "))
+
+        if account_id not in accounts:
+            print("Account not found.")
+        else:
+            del accounts[account_id]
+            print("Account closed successfully.")
+
+    elif choice == "6":
+        break
+
+    else:
+        print("Invalid choice.")
