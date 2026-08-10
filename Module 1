@@ -1,4 +1,6 @@
 accounts = {}
+customer_index={}
+next_id=1001
 
 while True:
     print("\n===== SECURE BANK =====")
@@ -7,7 +9,10 @@ while True:
     print("3. Withdraw")
     print("4. Balance Inquiry")
     print("5. Close Account")
-    print("6. Exit")
+    print("6. Transfer")
+    print("7. Reversal Last Transaction")
+    print("8. Find Customer Accounts")
+    print("9. Exit")
 
     choice = input("Enter choice: ")
 
@@ -18,8 +23,10 @@ while True:
 
         accounts[account_id] = {
             "name": name,
-            "balance": balance
+            "balance": balance,
+            "transactions":[]
         }
+        customer_index.setdefault(name,[]).append(next_id)    
 
         print("Account created successfully.")
 
@@ -31,6 +38,7 @@ while True:
         else:
             amount = float(input("Enter Deposit Amount: "))
             accounts[account_id]["balance"] += amount
+            accounts[account_id]["transactions"].append(("deposit",amount))
             print("Deposit successful.")
 
     elif choice == "3":
@@ -42,9 +50,10 @@ while True:
             amount = float(input("Enter Withdrawal Amount: "))
 
             if amount > accounts[account_id]["balance"]:
-                print("Insufficient funds.")
+                print("Insufficient balance.")
             else:
                 accounts[account_id]["balance"] -= amount
+                accounts[account_id]["transactions"].append(("withdraw",amount))
                 print("Withdrawal successful.")
 
     elif choice == "4":
@@ -55,7 +64,6 @@ while True:
         else:
             print("Customer:", accounts[account_id]["name"])
             print("Balance:", accounts[account_id]["balance"])
-
     elif choice == "5":
         account_id = int(input("Enter Account ID: "))
 
@@ -66,7 +74,52 @@ while True:
             print("Account closed successfully.")
 
     elif choice == "6":
-        break
+        from_id = int(input("Enter Sender Account ID: "))
+        to_id = int(input("Enter Receiver Account ID: "))
+        amount = float(input("Enter Transfer Amount: "))
 
-    else:
-        print("Invalid choice.")
+        if from_id not in accounts or to_id not in accounts:
+           print("Account not found.")
+        elif amount <= 0:
+            print("Invalid amount.")
+        elif amount > accounts[from_id]["balance"]:
+            print("Insufficient funds.")
+        else:
+             accounts[from_id]["balance"] -= amount
+             accounts[to_id]["balance"] += amount
+
+             accounts[from_id]["transactions"].append(("transfer", -amount))
+             accounts[to_id]["transactions"].append(("transfer", amount))
+
+             print("Transfer successful.")
+    elif choice == "7":
+        account_id = int(input("Enter Account ID: "))
+
+        if account_id not in accounts:
+            print("Account not found.")
+
+        elif len(accounts[account_id]["transactions"]) == 0:
+            print("No transaction to reverse.")
+
+        else:
+            transaction = accounts[account_id]["transactions"].pop()
+            transaction_type, amount = transaction
+
+        if transaction_type == "deposit":
+            accounts[account_id]["balance"] -= amount
+
+        elif transaction_type == "withdraw":
+            accounts[account_id]["balance"] += amount
+
+        print("Last transaction reversed successfully.")
+    elif choice == "8":
+        name = input("Enter Customer Name: ")
+
+        if name not in customer_index:
+          print("Customer not found.")
+
+        else:
+          print("Accounts:", customer_index[name])
+    elif choice == "9":
+          print("Thank You for Using SecureBank.")
+          break
